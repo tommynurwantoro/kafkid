@@ -1,0 +1,30 @@
+app: kafkid
+appVer: "v0.0.1"
+env: ${ENVIRONMENT}
+
+http:
+  port: {$HTTP_PORT}
+  readTimeout: 10
+  writeTimeout: 10
+
+log:
+  fileLocation: "logs/kafkid.log"
+  fileMaxSize: 50 # megabytes
+  fileMaxBackup: 10
+  fileMaxAge: 30 # days
+  stdout: true
+
+kafka:
+  addresses:
+    - 127.0.0.1:9092
+
+consumer:
+  enable: true
+  groupID: kafkid
+  topics: 
+    - notification
+    - user-activity
+  offset: newest # oldest/newest
+  output:
+    stdout: true
+    fileLocation: consumer.log
