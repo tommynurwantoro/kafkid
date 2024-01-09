@@ -30,7 +30,6 @@ type KafkaConfig struct {
 }
 
 type ConsumerConfig struct {
-	Enable  bool
 	GroupID string
 	Topics  []string
 	Offset  string

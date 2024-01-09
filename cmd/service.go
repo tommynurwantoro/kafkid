@@ -7,12 +7,12 @@ import (
 	"github.com/tommynurwantoro/kafkid/internal/pkg/logger"
 )
 
-var (
-	configFile string
-	command    = &cobra.Command{
-		Use:     "service",
-		Aliases: []string{"svc"},
-		Short:   "Run service",
+func RunPubisher() *cobra.Command {
+	var configFile string
+	command := &cobra.Command{
+		Use:     "publisher",
+		Aliases: []string{"pub"},
+		Short:   "Run Publisher Service",
 		Run: func(c *cobra.Command, args []string) {
 			conf := &config.Configuration{}
 			conf.LoadConfig(configFile)
@@ -30,13 +30,49 @@ var (
 			}
 
 			logger.Load(loggerConfig)
-			bootstrap.Run(conf)
+
+			bootstrap := bootstrap.NewBootstrap()
+			bootstrap.RunPubisher(conf)
 		},
 	}
-)
+	command.Flags().StringVar(&configFile, "config", "./config.yaml", "Set config file path")
 
-func GetCommand() *cobra.Command {
-	command.Flags().StringVar(&configFile, "config", "./config.sample.yaml", "Set config file path")
+	return command
+}
+
+func RunConsumer() *cobra.Command {
+	var configFile string
+	var topics []string
+	command := &cobra.Command{
+		Use:     "consumer",
+		Aliases: []string{"con"},
+		Short:   "Run Consumer Service",
+		Run: func(c *cobra.Command, args []string) {
+			conf := &config.Configuration{}
+			conf.LoadConfig(configFile)
+			conf.Consumer.Topics = topics
+
+			// Load logger
+			loggerConfig := logger.Config{
+				App:           conf.App,
+				AppVer:        conf.AppVer,
+				Env:           conf.Env,
+				FileLocation:  conf.Logger.FileLocation,
+				FileMaxSize:   conf.Logger.FileMaxAge,
+				FileMaxBackup: conf.Logger.FileMaxBackup,
+				FileMaxAge:    conf.Logger.FileMaxAge,
+				Stdout:        conf.Logger.Stdout,
+			}
+
+			logger.Load(loggerConfig)
+
+			bootstrap := bootstrap.NewBootstrap()
+			bootstrap.RunConsumer(conf)
+		},
+	}
+	command.Flags().StringVar(&configFile, "config", "./config.yaml", "Set config file path")
+	command.Flags().StringSliceVar(&topics, "topics", []string{}, "Set kafka topics. Example: --topics=topic1,topic2")
+	command.MarkFlagRequired("topics")
 
 	return command
 }

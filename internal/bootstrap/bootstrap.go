@@ -13,42 +13,65 @@ import (
 	"github.com/tommynurwantoro/kafkid/internal/adapter/rest"
 	"github.com/tommynurwantoro/kafkid/internal/pkg/container"
 	"github.com/tommynurwantoro/kafkid/internal/pkg/logger"
-	"github.com/tommynurwantoro/kafkid/internal/pkg/validator"
 )
 
-var appContainer = container.New()
+type Bootstrap struct {
+	AppContainer container.Container
+}
 
-func Run(conf *config.Configuration) {
-	appContainer.RegisterService("config", conf)
+func NewBootstrap() *Bootstrap {
+	return &Bootstrap{
+		AppContainer: container.New(),
+	}
+}
 
-	// Initialize struct validator
-	appContainer.RegisterService("validator", validator.NewGoValidator())
+func (b *Bootstrap) RunPubisher(conf *config.Configuration) {
+	b.AppContainer.RegisterService("config", conf)
 
-	bootstrapContext := context.Background()
 	logger.Info("Serving...")
 
 	// Register adapter
-	RegisterRest(conf)
+	b.RegisterRest(conf)
 
 	// Register application
-	RegisterService()
-	RegisterApi()
+	b.RegisterService()
+	b.RegisterApi()
 
 	// Startup the container
-	if err := appContainer.Ready(); err != nil {
+	if err := b.AppContainer.Ready(); err != nil {
 		logger.Panic("Failed to populate service", err)
 	}
 
 	// Start server
-	fiberApp := appContainer.GetServiceOrNil("fiber").(*rest.Fiber)
+	fiberApp := b.AppContainer.GetServiceOrNil("fiber").(*rest.Fiber)
 	errs := make(chan error, 2)
 	go func() {
 		fmt.Printf("Listening on port :%d", conf.Http.Port)
 		errs <- fiberApp.Listen(fmt.Sprintf(":%d", conf.Http.Port))
 	}()
 
+	logger.Info("Publisher started")
+
+	b.gracefulShutdown()
+}
+
+func (b *Bootstrap) RunConsumer(conf *config.Configuration) {
+	b.AppContainer.RegisterService("config", conf)
+
+	bootstrapContext := context.Background()
+	logger.Info("Serving...")
+
+	// Register adapter
+	b.RegisterConsumer()
+
+	// Startup the container
+	if err := b.AppContainer.Ready(); err != nil {
+		logger.Panic("Failed to populate service", err)
+	}
+
 	// Start consumer
-	subscriberApp := appContainer.GetServiceOrNil("subscriber").(*kafka.Subscriber)
+	subscriberApp := b.AppContainer.GetServiceOrNil("subscriber").(*kafka.Subscriber)
+
 	for _, topic := range conf.Consumer.Topics {
 		message, err := subscriberApp.Subscribe(bootstrapContext, topic)
 		if err != nil {
@@ -56,14 +79,16 @@ func Run(conf *config.Configuration) {
 		}
 
 		go subscriberApp.Consume(topic, message)
+
+		logger.Info(fmt.Sprintf("Subscribed to topic %s", topic))
 	}
 
-	logger.Info("Your app started")
+	logger.Info("Consumer started")
 
-	gracefulShutdown()
+	b.gracefulShutdown()
 }
 
-func gracefulShutdown() {
+func (b *Bootstrap) gracefulShutdown() {
 	quit := make(chan os.Signal, 2)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
@@ -77,7 +102,7 @@ func gracefulShutdown() {
 	logger.Info("Cleaning up resources...")
 
 	// This will shuting down all the resources
-	appContainer.Shutdown()
+	b.AppContainer.Shutdown()
 
 	logger.Info("Bye")
 }

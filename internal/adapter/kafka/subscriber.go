@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/Shopify/sarama"
-	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-kafka/v2/pkg/kafka"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/tommynurwantoro/kafkid/config"
@@ -18,6 +17,7 @@ type Subscriber struct {
 }
 
 func (s *Subscriber) Startup() error {
+	logger.Info("Starting up subscriber")
 	saramaSubscriberConfig := kafka.DefaultSaramaSubscriberConfig()
 	saramaSubscriberConfig.Consumer.Offsets.Initial = sarama.OffsetOldest
 
@@ -28,9 +28,10 @@ func (s *Subscriber) Startup() error {
 			OverwriteSaramaConfig: saramaSubscriberConfig,
 			ConsumerGroup:         s.Conf.Consumer.GroupID,
 		},
-		watermill.NewStdLogger(false, false),
+		nil,
 	)
 	if err != nil {
+		logger.Error("Failed to create subscriber", err)
 		return err
 	}
 

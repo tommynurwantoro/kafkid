@@ -7,7 +7,7 @@ http:
   readTimeout: 10
   writeTimeout: 10
 
-log:
+logger:
   fileLocation: "logs/kafkid.log"
   fileMaxSize: 50 # megabytes
   fileMaxBackup: 10
@@ -19,11 +19,7 @@ kafka:
     - 127.0.0.1:9092
 
 consumer:
-  enable: true
   groupID: kafkid
-  topics: 
-    - notification
-    - user-activity
   offset: newest # oldest/newest
   output:
     stdout: true

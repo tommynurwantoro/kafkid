@@ -6,11 +6,11 @@ import (
 	"github.com/tommynurwantoro/kafkid/internal/adapter/rest"
 )
 
-func RegisterRest(conf *config.Configuration) {
-	appContainer.RegisterService("fiber", new(rest.Fiber))
-	appContainer.RegisterService("publisher", new(kafka.Publisher))
+func (b *Bootstrap) RegisterRest(conf *config.Configuration) {
+	b.AppContainer.RegisterService("fiber", new(rest.Fiber))
+	b.AppContainer.RegisterService("publisher", new(kafka.Publisher))
+}
 
-	if conf.Consumer.Enable {
-		appContainer.RegisterService("subscriber", new(kafka.Subscriber))
-	}
+func (b *Bootstrap) RegisterConsumer() {
+	b.AppContainer.RegisterService("subscriber", new(kafka.Subscriber))
 }

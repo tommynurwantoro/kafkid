@@ -26,9 +26,9 @@ install:
 build:
 	go build -o bin/kafkid main.go
 
-## dev: Run binary applications without download module first
-dev: build
-	./bin/kafkid svc --config=$(config)
+## run: Run kafkid producer
+run-producer: build
+	./bin/kafkid producer --config=$(config)
 
 .PHONY: help
 all: help
