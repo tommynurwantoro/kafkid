@@ -33,3 +33,44 @@ Copy `config.sample.yaml` to `config.yaml` and modify based on your needs.
 make install
 ```
 
+### Usage
+
+### Run Publisher Service
+
+```bash
+make build
+./bin/kafkid producer
+```
+
+#### Publishing Message
+
+To publish a message to Kafka, use the provided API. Replace the placeholder values with your actual data.
+
+```json
+POST http://localhost:8123/v1/publish
+{
+    "topic": "notification",
+    "message": {
+        "test": "oke",
+        "isEnabled": 1
+    }
+    // "message": "you can send any type of message"
+}
+```
+
+### Run Consumer Service
+
+```bash
+make build
+./bin/kafkid consumer --topics=topic1,topic2
+```
+
+After you ran this command, the consumed message will be printed in console log
+
+## Contributing
+
+Contributions are welcome! Please follow the [Contribution Guidelines](CONTRIBUTION.md).
+
+## License
+
+This project is licensed under the MIT License.
