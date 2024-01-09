@@ -20,7 +20,7 @@ kafka:
 
 consumer:
   groupID: kafkid
-  offset: newest # oldest/newest
+  offsetFromNewest: true # false = from oldest offset in consumer group
   output:
     stdout: true
     fileLocation: consumer.log

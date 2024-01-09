@@ -30,10 +30,10 @@ type KafkaConfig struct {
 }
 
 type ConsumerConfig struct {
-	GroupID string
-	Topics  []string
-	Offset  string
-	Output  struct {
+	GroupID          string
+	Topics           []string
+	OffsetFromNewest bool
+	Output           struct {
 		Stdout       bool
 		FileLocation string
 	}

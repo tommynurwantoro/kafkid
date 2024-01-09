@@ -19,7 +19,11 @@ type Subscriber struct {
 func (s *Subscriber) Startup() error {
 	logger.Info("Starting up subscriber")
 	saramaSubscriberConfig := kafka.DefaultSaramaSubscriberConfig()
+
 	saramaSubscriberConfig.Consumer.Offsets.Initial = sarama.OffsetOldest
+	if s.Conf.Consumer.OffsetFromNewest {
+		saramaSubscriberConfig.Consumer.Offsets.Initial = sarama.OffsetNewest
+	}
 
 	subs, err := kafka.NewSubscriber(
 		kafka.SubscriberConfig{
@@ -47,13 +51,23 @@ func (s *Subscriber) Shutdown() error {
 func (c *Subscriber) Consume(topic string, messages <-chan *message.Message) {
 	for msg := range messages {
 		var messageContent interface{}
+		var partition int32
+		var offset int64
 
 		if err := json.Unmarshal(msg.Payload, &messageContent); err != nil {
 			logger.Info("Message is not in json format")
 			messageContent = string(msg.Payload)
 		}
 
-		logger.Info(fmt.Sprintf("===== Message Received =====\nTopic: %s\nRaw: %s\nUnmarshal: %v\n============================", topic, msg.Payload, messageContent))
+		if part, ok := kafka.MessagePartitionFromCtx(msg.Context()); ok {
+			partition = part
+		}
+
+		if off, ok := kafka.MessagePartitionOffsetFromCtx(msg.Context()); ok {
+			offset = off
+		}
+
+		logger.Info(fmt.Sprintf("===== Message Received =====\nTopic: %s\nPartition: %d\nOffset: %d\nRaw: %s\nUnmarshal: %v\n============================", topic, partition, offset, msg.Payload, messageContent))
 
 		msg.Ack()
 	}
