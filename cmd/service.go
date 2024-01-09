@@ -1,10 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
-	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"github.com/tommynurwantoro/kafkid/config"
 	"github.com/tommynurwantoro/kafkid/internal/bootstrap"
@@ -18,13 +14,6 @@ var (
 		Aliases: []string{"svc"},
 		Short:   "Run service",
 		Run: func(c *cobra.Command, args []string) {
-			// Load env variable
-			err := godotenv.Load(".env")
-			if err != nil {
-				fmt.Println("Fatal error loading .env file.\n", err)
-				os.Exit(1)
-			}
-
 			conf := &config.Configuration{}
 			conf.LoadConfig(configFile)
 

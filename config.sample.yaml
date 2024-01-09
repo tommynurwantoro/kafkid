@@ -1,9 +1,9 @@
 app: kafkid
 appVer: "v0.0.1"
-env: ${ENVIRONMENT}
+env: development
 
 http:
-  port: {$HTTP_PORT}
+  port: 8123
   readTimeout: 10
   writeTimeout: 10
 

@@ -1,6 +1,5 @@
 ## default arguments
 config = "./config.yaml"
-configLocal = "./config.local.yaml"
 
 ## test: Run test and enforce go coverage
 test:
@@ -27,13 +26,9 @@ install:
 build:
 	go build -o bin/kafkid main.go
 
-## run: Run binary applications but download module first
-run: install build
-	./bin/kafkid svc --config=$(config)
-
 ## dev: Run binary applications without download module first
 dev: build
-	./bin/kafkid svc --config=$(configLocal)
+	./bin/kafkid svc --config=$(config)
 
 .PHONY: help
 all: help
