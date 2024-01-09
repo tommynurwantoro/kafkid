@@ -7,12 +7,12 @@ import (
 	"github.com/tommynurwantoro/kafkid/internal/pkg/logger"
 )
 
-func RunPubisher() *cobra.Command {
+func RunProducer() *cobra.Command {
 	var configFile string
 	command := &cobra.Command{
-		Use:     "publisher",
-		Aliases: []string{"pub"},
-		Short:   "Run Publisher Service",
+		Use:     "producer",
+		Aliases: []string{"pro"},
+		Short:   "Run Producer Service",
 		Run: func(c *cobra.Command, args []string) {
 			conf := &config.Configuration{}
 			conf.LoadConfig(configFile)
@@ -32,7 +32,7 @@ func RunPubisher() *cobra.Command {
 			logger.Load(loggerConfig)
 
 			bootstrap := bootstrap.NewBootstrap()
-			bootstrap.RunPubisher(conf)
+			bootstrap.RunProducer(conf)
 		},
 	}
 	command.Flags().StringVar(&configFile, "config", "./config.yaml", "Set config file path")

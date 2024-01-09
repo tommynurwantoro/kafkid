@@ -35,12 +35,14 @@ make install
 
 ### Usage
 
-### Run Publisher Service
+### Run Producer Service
 
 ```bash
 make build
 ./bin/kafkid producer
 ```
+
+![Producer](assets/producer.png)
 
 #### Publishing Message
 
@@ -66,6 +68,7 @@ make build
 ```
 
 After you ran this command, the consumed message will be printed in console log
+![Consumer](assets/consumer.png)
 
 ## Contributing
 

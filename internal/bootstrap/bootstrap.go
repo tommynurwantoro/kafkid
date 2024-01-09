@@ -25,7 +25,7 @@ func NewBootstrap() *Bootstrap {
 	}
 }
 
-func (b *Bootstrap) RunPubisher(conf *config.Configuration) {
+func (b *Bootstrap) RunProducer(conf *config.Configuration) {
 	b.AppContainer.RegisterService("config", conf)
 
 	logger.Info("Serving...")

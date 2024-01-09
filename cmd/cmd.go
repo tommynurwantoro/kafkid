@@ -7,7 +7,7 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(RunPubisher())
+	rootCmd.AddCommand(RunProducer())
 	rootCmd.AddCommand(RunConsumer())
 }
 
