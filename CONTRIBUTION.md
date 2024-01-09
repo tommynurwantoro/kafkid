@@ -11,7 +11,7 @@ Please take a moment to review this document in order to make the contribution p
 2. Clone the forked repository to your local machine:
 
    ```bash
-   git clone https://github.com/yourusername/kafka-messaging-service.git
+   git clone https://github.com/tommynurwantoro/kafkid.git
    ```
 
 3. Create a new branch for your feature or bug fix:
