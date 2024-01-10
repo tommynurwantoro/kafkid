@@ -20,6 +20,7 @@ func (s *Subscriber) Startup() error {
 	logger.Info("Starting up subscriber")
 	saramaSubscriberConfig := kafka.DefaultSaramaSubscriberConfig()
 
+	saramaSubscriberConfig.ClientID = "kafkid"
 	saramaSubscriberConfig.Consumer.Offsets.Initial = sarama.OffsetOldest
 	if s.Conf.Consumer.OffsetFromNewest {
 		saramaSubscriberConfig.Consumer.Offsets.Initial = sarama.OffsetNewest
